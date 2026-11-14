@@ -1,0 +1,122 @@
+# Expects sibling checkouts of dtnpm-core (`../dtnpm-core`) and hardy (`../../hardy`).
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-test-lint:
+    name: DTN App Tests & SBOM
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hardy DTN workspace
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ricktaylor/hardy
+          path: hardy
+      - name: Checkout dtnpm-core
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: dtn-postmaster/dtnpm-core
+          path: dtn-postmaster/dtnpm-core
+      - name: Checkout template-dtnpm-app
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: dtn-postmaster/template-dtnpm-app
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        with:
+          workspaces: dtn-postmaster/template-dtnpm-app
+      - name: Formatting check
+        working-directory: dtn-postmaster/template-dtnpm-app
+        run: cargo fmt --all -- --check
+      - name: Strict Clippy check (production targets)
+        working-directory: dtn-postmaster/template-dtnpm-app
+        run: cargo clippy --workspace --lib --bins -- -D warnings -D clippy::unwrap_used -D clippy::panic
+      - name: Run cargo test
+        working-directory: dtn-postmaster/template-dtnpm-app
+        run: cargo test --all-features
+      - name: Generate CycloneDX / SPDX SBOM (Syft)
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          path: dtn-postmaster/template-dtnpm-app
+          output-file: dtn-postmaster/template-dtnpm-app/sbom.json
+          format: cyclonedx-json
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: sbom-template-dtnpm-app
+          path: dtn-postmaster/template-dtnpm-app/sbom.json
+
+  security-audit:
+    name: Security & License Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hardy DTN workspace
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ricktaylor/hardy
+          path: hardy
+      - name: Checkout dtnpm-core
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: dtn-postmaster/dtnpm-core
+          path: dtn-postmaster/dtnpm-core
+      - name: Checkout template-dtnpm-app
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: dtn-postmaster/template-dtnpm-app
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        with:
+          workspaces: dtn-postmaster/template-dtnpm-app
+      - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2
+        with:
+          tool: cargo-audit, cargo-deny, gitleaks
+      - name: Run strict security checks
+        working-directory: dtn-postmaster/template-dtnpm-app
+        run: ./scripts/check-security.sh --strict
+
+  code-coverage:
+    name: Code Coverage (LCOV)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Hardy DTN workspace
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: ricktaylor/hardy
+          path: hardy
+      - name: Checkout dtnpm-core
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: dtn-postmaster/dtnpm-core
+          path: dtn-postmaster/dtnpm-core
+      - name: Checkout template-dtnpm-app
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          path: dtn-postmaster/template-dtnpm-app
+      - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
+        with:
+          workspaces: dtn-postmaster/template-dtnpm-app
+      - uses: taiki-e/install-action@9299c56f1fb893650f348425bb02c3acf492ebd2 # cargo-llvm-cov
+      - name: Generate LCOV coverage report
+        working-directory: dtn-postmaster/template-dtnpm-app
+        run: ./scripts/check-coverage.sh --lcov
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: coverage-template-dtnpm-app
+          path: dtn-postmaster/template-dtnpm-app/lcov.info

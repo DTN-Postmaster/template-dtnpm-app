@@ -1,0 +1,15 @@
+# Example configuration for template-dtnpm-app
+# CRA compliance note: ensure this file has 0600 permissions if secrets are included.
+# chmod 0600 config.toml
+
+service-name = "my-service"
+max-payload-size = 16777216 # 16 MiB
+
+# BPSec verification policy: "strict", "warn", or "ignore"
+verify-policy = "strict"
+
+# Optional path to directional BPSec HMAC-SHA256 / Ed25519 keystore
+# keystore-path = "/etc/dtnpm/keystore.json"
+
+# Explicit opt-in to accept unsigned bundles under strict verification policy
+allow-unauthenticated = false

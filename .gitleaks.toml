@@ -1,0 +1,14 @@
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Global allowlist for benign test patterns and placeholder tokens"
+paths = [
+    '''tests/''',
+    '''examples/''',
+]
+regexes = [
+    '''token\.txt''',
+    '''secret-bearer-token''',
+    '''example-bearer-token''',
+]
