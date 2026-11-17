@@ -20,8 +20,9 @@ jobs:
       - name: Checkout Hardy DTN workspace
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          repository: ricktaylor/hardy
+          repository: loic-fejoz/hardy
           path: hardy
+          ref: main-dtnpm
       - name: Checkout dtnpm-core
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -65,8 +66,9 @@ jobs:
       - name: Checkout Hardy DTN workspace
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          repository: ricktaylor/hardy
+          repository: loic-fejoz/hardy
           path: hardy
+          ref: main-dtnpm
       - name: Checkout dtnpm-core
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -82,7 +84,7 @@ jobs:
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         with:
           workspaces: dtn-postmaster/template-dtnpm-app
-      - uses: taiki-e/install-action@4a76afe23f9e08d2d9550fb56e556444e8611d21 # v2
+      - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2
         with:
           tool: cargo-audit, cargo-deny, gitleaks
       - name: Run strict security checks
@@ -96,8 +98,9 @@ jobs:
       - name: Checkout Hardy DTN workspace
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          repository: ricktaylor/hardy
+          repository: loic-fejoz/hardy
           path: hardy
+          ref: main-dtnpm
       - name: Checkout dtnpm-core
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

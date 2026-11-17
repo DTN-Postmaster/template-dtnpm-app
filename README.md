@@ -1,55 +1,55 @@
-# template-dtnpm-app — Template d'Application / Service DTN
+# template-dtnpm-app — DTN Application / Service Template
 
-Template GitHub officiel pour créer une nouvelle application ou un service autonome DTN BPv7 au sein de l'écosystème **DTN Postmaster** (`dtnpm`).
+Official GitHub template for creating a new standalone DTN BPv7 application or service within the **DTN Postmaster** (`dtnpm`) ecosystem.
 
-## 📦 Caractéristiques Embarquées
+## 📦 Built-in Features
 
-- **Service BPA Robuste** : Implémentation prête à l'emploi du trait `hardy_bpa::services::BpaService`.
-- **Contrôle BPSec Intégré** : Vérification des signatures RFC 9172 avec politique stricte par défaut et option de dérogation explicite (`--allow-unauthenticated`).
-- **Conformité Cyber Resilience Act (CRA)** :
-  - Résolution sécurisée de jetons via `--token-file` / variable d'environnement (aucun secret dans `cmdline`).
-  - Permissions strictes `0600` recommandées sur les fichiers de configuration.
-  - Déclaration VEX pour `cargo-audit` et `cargo-deny`.
-  - Actions GitHub CI épinglées par SHA-1 à 40 caractères avec permissions de jeton minimales.
-- **Zéro Panic / Zéro Unwrap** : Code de production 100% exempt de panics.
-- **ADRs Pré-configurés** : Répertoire `adr/` prêt pour consigner les décisions de conception.
+- **Robust BPA Service**: Ready-to-use implementation of the `hardy_bpa::services::BpaService` trait.
+- **Integrated BPSec Control**: RFC 9172 signature verification with strict policy by default and explicit override option (`--allow-unauthenticated`).
+- **Cyber Resilience Act (CRA) Compliance**:
+  - Secure token resolution via `--token-file` / environment variable (no secrets in `cmdline`).
+  - Strict `0600` permissions recommended on configuration files.
+  - VEX declaration for `cargo-audit` and `cargo-deny`.
+  - GitHub CI actions pinned by 40-character SHA-1 with minimal token permissions.
+- **Zero Panic / Zero Unwrap**: Production code 100% free of panics.
+- **Pre-configured ADRs**: `adr/` directory ready to record design decisions.
 
 ---
 
-## 🚀 Utilisation & Instanciation du Template
+## 🚀 Usage & Template Instantiation
 
-### Étape 1 : Créer votre dépôt à partir du template
-Sur GitHub, cliquez sur **"Use this template"** ou clonez localement :
+### Step 1: Create your repository from the template
+On GitHub, click **"Use this template"** or clone locally:
 ```bash
-cp -r template-dtnpm-app dtnpm-app-mon-service
-cd dtnpm-app-mon-service
+cp -r template-dtnpm-app dtnpm-app-my-service
+cd dtnpm-app-my-service
 ```
 
-### Étape 2 : Renommer le paquet Cargo
-Dans `Cargo.toml` :
+### Step 2: Rename the Cargo package
+In `Cargo.toml`:
 ```toml
 [package]
-name = "dtnpm-app-mon-service"
-description = "Mon application DTN personnalisée"
+name = "dtnpm-app-my-service"
+description = "My custom DTN application"
 
 [lib]
-name = "dtnpm_app_mon_service"
+name = "dtnpm_app_my_service"
 
 [[bin]]
-name = "dtnpm-app-mon-service"
+name = "dtnpm-app-my-service"
 ```
 
-### Étape 3 : Implémenter la logique métier
-Éditez `src/service.rs` et complétez la méthode `process_payload` :
+### Step 3: Implement business logic
+Edit `src/service.rs` and complete the `process_payload` method:
 ```rust
 impl AppService {
     pub async fn process_payload(&self, id: &hardy_bpv7::bundle::Id, payload: &[u8]) {
-        // Votre traitement applicatif ici...
+        // Your application processing here...
     }
 }
 ```
 
-### Étape 4 : Valider la suite de tests et de sécurité
+### Step 4: Validate the test and security suite
 ```bash
 cargo fmt --all -- --check
 cargo clippy --workspace --lib --bins -- -D warnings -D clippy::unwrap_used -D clippy::panic
@@ -59,28 +59,28 @@ cargo test --all-targets
 
 ---
 
-## 🛠️ Commandes & Options CLI
+## 🛠️ CLI Commands & Options
 
 ```bash
-# Lancement avec fichier de jeton sécurisé
-dtnpm-app-mon-service --token-file /etc/dtnpm/token.secret --service mon-service
+# Launch with secure token file
+dtnpm-app-my-service --token-file /etc/dtnpm/token.secret --service my-service
 
-# Lancement via socket UNIX local
-dtnpm-app-mon-service --socket /run/dtnpm/dtnpm.sock --service mon-service
+# Launch via local UNIX socket
+dtnpm-app-my-service --socket /run/dtnpm/dtnpm.sock --service my-service
 
-# Mode dégradé explicite pour banc de test sans signature
-dtnpm-app-mon-service --allow-unauthenticated
+# Explicit degraded mode for unsigned testbench
+dtnpm-app-my-service --allow-unauthenticated
 ```
 
 ---
 
-## 📚 Documentation & Références
+## 📚 Documentation & References
 
-- [AGENTS.md](AGENTS.md) : Guide de développement pour les agents d'intelligence artificielle.
-- [CONTRIBUTING.md](CONTRIBUTING.md) : Guide de contribution et standards de qualité.
-- [SECURITY.md](SECURITY.md) : Politique de sécurité et processus de divulgation de vulnérabilités.
-- [adr/README.md](adr/README.md) : Registre des décisions d'architecture (ADRs).
+- [AGENTS.md](AGENTS.md): Development guide for AI agents.
+- [CONTRIBUTING.md](CONTRIBUTING.md): Contribution guide and quality standards.
+- [SECURITY.md](SECURITY.md): Security policy and vulnerability disclosure process.
+- [adr/README.md](adr/README.md): Architecture Decision Records (ADRs) index.
 
-## 📄 Licence
+## 📄 License
 
 Dual-licensed under the Apache License, Version 2.0 or the MIT License. See [LICENSE.md](LICENSE.md).

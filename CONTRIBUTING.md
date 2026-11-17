@@ -1,21 +1,21 @@
-# Guide de Contribution — `template-dtnpm-app`
+# Contributing Guide — `template-dtnpm-app`
 
-Ce document présente les directives de contribution et standards de qualité pour les applications basées sur `template-dtnpm-app`.
-
----
-
-## 1. Principes Fondamentaux
-
-- **Zéro Panic / Zéro Unwrap** : Tout le code de production (`--lib`, `--bins`) doit être strictement exempt d'appels risquant de provoquer un arrêt brutal du processus.
-- **Sécurité et Confidentialité (CRA)** :
-  - Ne jamais accepter de secrets en clair dans les paramètres CLI (`/proc/<pid>/cmdline`).
-  - Imposer des permissions `0600` sur tout fichier de configuration contenant des clés ou tokens.
-- **Traçabilité (ADR)** :
-  - Tout changement de conception doit faire l'objet d'un fichier ADR sous `adr/`.
+This document outlines the contribution guidelines and quality standards for applications based on `template-dtnpm-app`.
 
 ---
 
-## 2. Validation Avant Commit
+## 1. Core Principles
+
+- **Zero Panic / Zero Unwrap**: All production code (`--lib`, `--bins`) must be strictly free of calls that could cause an abrupt process termination.
+- **Security and Privacy (CRA)**:
+  - Never accept cleartext secrets in CLI parameters (`/proc/<pid>/cmdline`).
+  - Enforce `0600` permissions on any configuration file containing keys or tokens.
+- **Traceability (ADR)**:
+  - Every design change must be documented in an ADR file under `adr/`.
+
+---
+
+## 2. Pre-Commit Validation
 
 ```bash
 cargo fmt --all -- --check
