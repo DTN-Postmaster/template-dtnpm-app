@@ -35,6 +35,20 @@ jobs:
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           components: rustfmt, clippy
+      - name: Cache protoc
+        id: protoc-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/protoc
+          key: protoc-29.3-linux-x86_64
+      - name: Install protoc (cache miss)
+        if: steps.protoc-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL -o /tmp/protoc.zip "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-x86_64.zip"
+          mkdir -p "$HOME/.local/protoc"
+          unzip -q /tmp/protoc.zip -d "$HOME/.local/protoc"
+      - name: Add protoc to PATH
+        run: echo "$HOME/.local/protoc/bin" >> "$GITHUB_PATH"
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         with:
           workspaces: dtn-postmaster/template-dtnpm-app
@@ -81,10 +95,26 @@ jobs:
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
         with:
           components: rustfmt, clippy
+      - name: Cache protoc
+        id: protoc-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/protoc
+          key: protoc-29.3-linux-x86_64
+      - name: Install protoc (cache miss)
+        if: steps.protoc-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL -o /tmp/protoc.zip "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-x86_64.zip"
+          mkdir -p "$HOME/.local/protoc"
+          unzip -q /tmp/protoc.zip -d "$HOME/.local/protoc"
+      - name: Add protoc to PATH
+        run: echo "$HOME/.local/protoc/bin" >> "$GITHUB_PATH"
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         with:
           workspaces: dtn-postmaster/template-dtnpm-app
       - uses: taiki-e/install-action@ab49d3c64680143e184118bed66a46419fc15519 # v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tool: cargo-audit, cargo-deny, gitleaks
       - name: Run strict security checks
@@ -111,10 +141,26 @@ jobs:
         with:
           path: dtn-postmaster/template-dtnpm-app
       - uses: dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec # stable
+      - name: Cache protoc
+        id: protoc-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/protoc
+          key: protoc-29.3-linux-x86_64
+      - name: Install protoc (cache miss)
+        if: steps.protoc-cache.outputs.cache-hit != 'true'
+        run: |
+          curl -fsSL -o /tmp/protoc.zip "https://github.com/protocolbuffers/protobuf/releases/download/v29.3/protoc-29.3-linux-x86_64.zip"
+          mkdir -p "$HOME/.local/protoc"
+          unzip -q /tmp/protoc.zip -d "$HOME/.local/protoc"
+      - name: Add protoc to PATH
+        run: echo "$HOME/.local/protoc/bin" >> "$GITHUB_PATH"
       - uses: Swatinem/rust-cache@d1527c8f67ef9af357290475d4af4b0fab8f12e0 # v2
         with:
           workspaces: dtn-postmaster/template-dtnpm-app
       - uses: taiki-e/install-action@9299c56f1fb893650f348425bb02c3acf492ebd2 # cargo-llvm-cov
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Generate LCOV coverage report
         working-directory: dtn-postmaster/template-dtnpm-app
         run: ./scripts/check-coverage.sh --lcov
